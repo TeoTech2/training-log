@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Logbook</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-left">
+                <h1>Training Logbook</h1>
+            </div>
+            <div class="header-actions">
+                <button id="new-activity-btn" class="btn btn-primary">New Workout</button>
+                <button id="export-data-btn" class="btn btn-sm">Export Data</button>
+                <button id="import-data-btn" class="btn btn-sm">Import Data</button>
+                <button id="clear-data-btn" class="btn btn-sm btn-danger">Clear Data</button>
+                <button id="reload-data-btn" class="btn btn-sm">Reload Data</button>
+                <input type="file" id="import-file" style="display: none" accept=".json">
+            </div>
+        </header>
+        
+        <div class="summary-panel">
+            <div class="summary-grid">
+                <div class="summary-label">Training Period:</div>
+                <div class="summary-data">
+                    <div class="total-value">12:35</div>
+                    <div class="total-counts">
+                        <div>Sessions: <span id="total-sessions">0</span></div>
+                        <div>Active sessions: <span id="active-sessions">0</span></div>
+                        <div>Recovery sessions: <span id="recovery-sessions">0</span></div>
+                        <div>Sick days: <span id="sick-days">0</span></div>
+                        <div>Alternative: <span id="alternative-time">0:00</span></div>
+                        <div>Competitions (km): <span id="competition-km">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="intensity-scale-container">
+                    <div class="scale-row">
+                        <div class="intensity-label">Weekly</div>
+                        <div class="intensity-boxes">
+                            <div class="intensity-box i1">I1</div>
+                            <div class="intensity-box i2">I2</div>
+                            <div class="intensity-box i3">I3</div>
+                            <div class="intensity-box i4">I4</div>
+                            <div class="intensity-box i5">I5</div>
+                            <div class="intensity-box i6">I6</div>
+                            <div class="intensity-box i7">I7</div>
+                        </div>
+                    </div>
+                    <div class="scale-row">
+                        <div class="intensity-label">Hours:</div>
+                        <div class="intensity-values">
+                            <div id="i1-time" class="intensity-value">0:00</div>
+                            <div id="i2-time" class="intensity-value">0:00</div>
+                            <div id="i3-time" class="intensity-value">0:00</div>
+                            <div id="i4-time" class="intensity-value">0:00</div>
+                            <div id="i5-time" class="intensity-value">0:00</div>
+                            <div id="i6-time" class="intensity-value">0:00</div>
+                            <div id="i7-time" class="intensity-value">0:00</div>
+                        </div>
+                    </div>
+                    <div class="scale-row">
+                        <div class="intensity-label">Distance:</div>
+                        <div class="intensity-values">
+                            <div id="i1-distance" class="intensity-value">0.0</div>
+                            <div id="i2-distance" class="intensity-value">0.0</div>
+                            <div id="i3-distance" class="intensity-value">0.0</div>
+                            <div id="i4-distance" class="intensity-value">0.0</div>
+                            <div id="i5-distance" class="intensity-value">0.0</div>
+                            <div id="i6-distance" class="intensity-value">0.0</div>
+                            <div id="i7-distance" class="intensity-value">0.0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="training-progress">
+                    <div class="progress-item">
+                        <div class="progress-label"><span id="specific-training-percent">0</span>% specific training</div>
+                        <div class="progress-bar-container">
+                            <div id="specific-training-bar" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label"><span id="general-training-percent">0</span>% general training</div>
+                        <div class="progress-bar-container">
+                            <div id="general-training-bar" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="activities-container">
+                <div class="activity-log">
+                    <table id="activities-table" class="dagbook-table">
+                        <thead>
+                            <tr>
+                                <th class="col-day">DAY</th>
+                                <th class="col-intensity">I</th>
+                                <th class="col-time">TIME</th>
+                                <th class="col-details">ACTIVITY DETAILS</th>
+                                <th class="col-feeling">FEEL</th>
+                                <th class="col-comments">COMMENT</th>
+                                <th class="col-rating">R</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activities-list">
+                            <!-- Activities will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="notes-panel">
+                    <div class="notes-header">WEEKLY COMMENTS AND REFLECTIONS</div>
+                    <div class="notes-content">
+                        <textarea id="week-notes" placeholder="No comments"></textarea>
+                    </div>
+                    <div class="notes-actions">
+                        <button id="save-notes-btn" class="btn btn-primary">Save Notes</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="trends-panel">
+                <button id="show-trends-btn" class="btn btn-side">
+                    <span class="btn-icon">📊</span>
+                    <span class="btn-text">Weekly Trends</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for adding/editing activities -->
+    <div id="activity-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Log Workout</h2>
+            <form id="activity-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="activity-date">Date</label>
+                        <input type="date" id="activity-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-type">Type</label>
+                        <select id="activity-type" required>
+                            <option value="swim">Swim</option>
+                            <option value="bike">Bike</option>
+                            <option value="run">Run</option>
+                            <option value="strength">Strength</option>
+                            <option value="recovery">Recovery</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="activity-intensity">Intensity</label>
+                        <select id="activity-intensity" required>
+                            <option value="I1">I1</option>
+                            <option value="I2">I2</option>
+                            <option value="I3">I3</option>
+                            <option value="I4">I4</option>
+                            <option value="I5">I5</option>
+                            <option value="I6">I6</option>
+                            <option value="I7">I7</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-time">Time (hh:mm)</label>
+                        <input type="text" id="activity-time" placeholder="00:00" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activity-details">Details</label>
+                    <input type="text" id="activity-details" placeholder="Workout description" required>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="activity-distance">Distance (km)</label>
+                        <input type="number" id="activity-distance" step="0.1" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-feeling">Feeling</label>
+                        <select id="activity-feeling">
+                            <option value="good">Good</option>
+                            <option value="average">Average</option>
+                            <option value="bad">Bad</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activity-comment">Comment</label>
+                    <textarea id="activity-comment" rows="2"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activity-rating">Rating (1-5)</label>
+                    <div class="rating-selector">
+                        <span class="rating-option" data-value="1">1</span>
+                        <span class="rating-option" data-value="2">2</span>
+                        <span class="rating-option" data-value="3">3</span>
+                        <span class="rating-option" data-value="4">4</span>
+                        <span class="rating-option" data-value="5">5</span>
+                    </div>
+                    <input type="hidden" id="activity-rating" value="3">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" id="save-activity" class="btn btn-primary">Save Workout</button>
+                    <button type="button" id="cancel-activity" class="btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal for weekly trends -->
+    <div id="trends-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <span class="close-modal">&times;</span>
+            <h2>Running Data Analysis</h2>
+            <div class="trends-container">
+
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
